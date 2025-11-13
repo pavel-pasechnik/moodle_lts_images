@@ -82,12 +82,14 @@ RUN set -eux \
  && docker-php-ext-enable igbinary msgpack redis
 
 # Moodle root
-WORKDIR ${MOODLE_APP_DIR}
+WORKDIR /var/www
 
 # -------- Download Moodle --------
 RUN rm -rf "${MOODLE_APP_DIR}" \
  && git clone --branch "${MOODLE_VERSION}" --depth 1 "${MOODLE_GIT_REPO}" "${MOODLE_APP_DIR}" \
  && chown -R www-data:www-data "${MOODLE_APP_DIR}"
+
+WORKDIR ${MOODLE_APP_DIR}
 
 # Apache config per Moodle generation
 COPY ${APACHE_CONF} /etc/apache2/sites-enabled/000-default.conf
