@@ -97,6 +97,9 @@ WORKDIR ${MOODLE_APP_DIR}
 # Apache config per Moodle generation
 COPY ${APACHE_CONF} /etc/apache2/sites-enabled/000-default.conf
 
+# Custom PHP overrides (e.g., higher max_input_vars required by installer)
+COPY config/php/php.ini /usr/local/etc/php/conf.d/zzz-moodle.ini
+
 # -------- Cron --------
 RUN echo "* * * * * www-data php ${MOODLE_APP_DIR}/admin/cli/cron.php > /dev/null 2>&1" \
     > /etc/cron.d/moodle-cron \
