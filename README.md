@@ -28,7 +28,7 @@ See the [Docker Hub tags page](https://hub.docker.com/r/pasechnik/moodle_lts_ima
 - PECL extensions `igbinary`, `msgpack`, `redis` compiled with igbinary/msgpack/lzf support.
 - Cron job every minute via `/etc/cron.d/moodle-cron`.
 - Entry script writes Redis session configuration to `/usr/local/etc/php/conf.d/redis-session.ini`.
-- Custom overrides in `config/php/php.ini` copied to `/usr/local/etc/php/conf.d/zzz-moodle.ini` (ships with `max_input_vars = 5000`, higher resource/time limits, error/log suppression, and tuned opcache).
+- Custom overrides in `config/php/php.ini` copied to `/usr/local/etc/php/conf.d/zzz-moodle.ini` (ships with `max_input_vars = 5000`, higher resource/time limits, error/log suppression, tuned opcache, and `cgi.fix_pathinfo=1` for PHP-FPM).
 - Elasticsearch support should be installed at the application level via the official Composer client (PECL module is discontinued).
 
 ### How to use these images
@@ -83,7 +83,19 @@ The build copies `config/php/php.ini` into `/usr/local/etc/php/conf.d/zzz-moodle
 - raises `max_input_vars` to `5000`, satisfying the Moodle installer;
 - bumps typical upload/time/memory limits (`upload_max_filesize = 50M`, `post_max_size = 50M`, `memory_limit = 512M`, `max_execution_time = 300`);
 - disables runtime error display/logging (`display_errors = Off`, `log_errors = Off`); and
-- configures opcache for medium-sized deployments.
+- configures opcache for medium-sized deployments;
+- enables `cgi.fix_pathinfo = 1` so Moodle's "slash arguments" work with PHP-FPM + Nginx.
+
+### PHP-FPM pool tuning
+
+PHP-FPM images additionally copy `config/php-fpm/www.conf` into `/usr/local/etc/php-fpm.d/www.conf`, which:
+
+- listens on `0.0.0.0:9000` with socket permissions suitable for sidecar Nginx/Traefik;
+- keeps `clear_env = no` so Docker environment variables reach Moodle;
+- exposes `/php-ping` and `/php-status` endpoints for health checks;
+- caps the pool at 20 workers by default (`pm = dynamic`)—tune `pm.max_children`, etc., before rebuilding if you need more throughput;
+- logs slow requests to stderr for easier container troubleshooting; and
+- limits executable extensions to `.php*` for safety.
 
 Adjust this file to suit your environment, then rebuild/push the image—the `zzz-` prefix ensures the overrides load last.
 

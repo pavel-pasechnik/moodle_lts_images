@@ -91,6 +91,9 @@ WORKDIR ${MOODLE_APP_DIR}
 # Custom PHP overrides (e.g., higher max_input_vars required by installer)
 COPY config/php/php.ini /usr/local/etc/php/conf.d/zzz-moodle.ini
 
+# PHP-FPM pool tuned for Moodle reverse proxy setups
+COPY config/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
+
 # -------- Cron --------
 RUN echo "* * * * * www-data php ${MOODLE_APP_DIR}/admin/cli/cron.php > /dev/null 2>&1" \
     > /etc/cron.d/moodle-cron \
