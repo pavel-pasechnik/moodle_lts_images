@@ -44,6 +44,9 @@ RUN apt-get update \
     git \
     unzip \
     cron \
+    postgresql-client \
+    default-mysql-client \
+    mariadb-client \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
