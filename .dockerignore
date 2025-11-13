@@ -1,0 +1,14 @@
+.git
+.github
+.gitignore
+.dockerignore
+.history
+.env
+.env.*
+# keep Docker build definitions + docs in context
+# negate .env example so documentation remains available to images if needed
+!.env.example
+.DS_Store
+__pycache__
+.idea
+.vscode

@@ -1,0 +1,15 @@
+# Local env overrides
+.env
+
+# Docker build artifacts / caches
+*.tar
+*.log
+
+# IDE / OS files
+.DS_Store
+__pycache__/
+.idea/
+.vscode/
+
+# Project history snapshots
+.history/
