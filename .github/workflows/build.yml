@@ -21,8 +21,6 @@ jobs:
             document_root: "/var/www/moodle"
             tags: |
               type=raw,value=4.5.7-lts
-              type=raw,value=4.5-lts
-              type=raw,value=4-lts
             latest: false
           - moodle: "v5.0.3"
             php_version: "8.2"
@@ -30,7 +28,6 @@ jobs:
             document_root: "/var/www/moodle/public"
             tags: |
               type=raw,value=5.0.3-lts
-              type=raw,value=5.0-lts
             latest: false
           - moodle: "v5.1.0"
             php_version: "8.2"
@@ -38,8 +35,6 @@ jobs:
             document_root: "/var/www/moodle/public"
             tags: |
               type=raw,value=5.1.0-lts
-              type=raw,value=5.1-lts
-              type=raw,value=5-lts
             latest: true
 
     steps:
