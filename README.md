@@ -1,24 +1,29 @@
 ## Moodle LTS Docker images
 
-Production-ready Apache images for Moodle LTS lines with PHP 8.1/8.2, tuned Redis sessions, and a prewired cron scheduler. This repository backs [pasechnik/moodle_lts_images](https://hub.docker.com/r/pasechnik/moodle_lts_images) but can be used to build custom variants.
+Production-ready Apache and PHP-FPM images for Moodle LTS lines with PHP 8.1/8.2, tuned Redis sessions, and a prewired cron scheduler. This repository backs [pasechnik/moodle_lts_images](https://hub.docker.com/r/pasechnik/moodle_lts_images) but can be used to build custom variants.
 
 ### Supported tags and variants
 
 - `4.5.7-lts` – Moodle 4.5.7 LTS, PHP 8.1, document root `/var/www/moodle`, virtual host `apache-4.x.conf`.
+- `4.5.7-lts-fpm` – PHP-FPM sibling of `4.5.7-lts` (PHP 8.1) for use with external web servers.
 - `5.0.3-lts` – Moodle 5.0.3 LTS, PHP 8.2, document root `/var/www/moodle/public`, virtual host `apache-5.x.conf`.
+- `5.0.3-lts-fpm` – PHP-FPM sibling of `5.0.3-lts` (PHP 8.2) for Nginx/Traefik/Ingress setups.
 - `5.1.0-lts`, `latest` – Moodle 5.1.0 LTS, PHP 8.2, public webroot `/var/www/moodle/public`.
+- `5.1.0-lts-fpm`, `latest-fpm` – PHP-FPM sibling of `5.1.0-lts` (PHP 8.2), meant to be fronted by a reverse proxy/web server.
+
+Every `*-lts` tag ships with a matching `*-lts-fpm` FastCGI variant so you can choose between the bundled Apache and your own HTTP tier.
 
 See the [Docker Hub tags page](https://hub.docker.com/r/pasechnik/moodle_lts_images/tags) for the live list.
 
 ### Quick reference
 
 - **Source & issues**: [github.com/pavel-pasechnik/moodle_lts_images](https://github.com/pavel-pasechnik/moodle_lts_images)
-- **Base images**: official `php:<PHP_VERSION>-apache`
+- **Base images**: official `php:<PHP_VERSION>-apache` (Apache variant) and `php:<PHP_VERSION>-fpm` (PHP-FPM variant)
 - **Supported databases**: PostgreSQL 13+, MySQL 8+, MariaDB 10.5+ (clients only ship with the container)
 
 ### Image highlights
 
-- Apache 2.4 with `rewrite`, `headers`, `ssl`, `expires`, `deflate`, `FallbackResource /r.php`, `AcceptPathInfo On`, `Options -Indexes`, `EnableSendfile Off`, and `EnableMMAP Off`.
+- Apache 2.4 with `rewrite`, `headers`, `ssl`, `expires`, `deflate`, `FallbackResource /r.php`, `AcceptPathInfo On`, `Options -Indexes`, `EnableSendfile Off`, and `EnableMMAP Off` (only in the bundled Apache images; PHP-FPM variants expect an external HTTP server).
 - PHP 8.1/8.2 with `intl`, `soap`, `xsl`, `opcache`, `gd`, `zip`, `pdo_mysql`, `pdo_pgsql`, `pgsql`, `mysqli`, and more.
 - PECL extensions `igbinary`, `msgpack`, `redis` compiled with igbinary/msgpack/lzf support.
 - Cron job every minute via `/etc/cron.d/moodle-cron`.
@@ -28,13 +33,22 @@ See the [Docker Hub tags page](https://hub.docker.com/r/pasechnik/moodle_lts_ima
 
 ### How to use these images
 
-Run a published tag:
+Run a published Apache tag:
 
 ```bash
 docker run --rm -p 8080:80 \
   -e REDIS_HOST=redis \
   -v moodledata:/var/www/moodledata \
   pasechnik/moodle_lts_images:5.1.0-lts
+```
+
+Run a published PHP-FPM tag (expose port 9000 for FastCGI and point your web server at it):
+
+```bash
+docker run --rm -p 9000:9000 \
+  -e REDIS_HOST=redis \
+  -v moodledata:/var/www/moodledata \
+  pasechnik/moodle_lts_images:5.1.0-lts-fpm
 ```
 
 Build/push your own variant:
@@ -48,6 +62,18 @@ docker build \
   -t your-namespace/moodle:5.1.0-lts .
 
 docker push your-namespace/moodle:5.1.0-lts
+```
+
+For environments that terminate HTTP elsewhere, use the PHP-FPM variant:
+
+```bash
+docker build -f Dockerfile.fpm \
+  --build-arg PHP_VERSION=8.2 \
+  --build-arg MOODLE_VERSION=v5.1.0 \
+  --build-arg DOCUMENT_ROOT=/var/www/moodle/public \
+  -t your-namespace/moodle:5.1.0-lts-fpm .
+
+docker push your-namespace/moodle:5.1.0-lts-fpm
 ```
 
 ### PHP configuration overrides
@@ -100,7 +126,7 @@ volumes:
 | `MOODLE_VERSION` | Moodle git tag to clone. | `v5.1.0` |
 | `MOODLE_GIT_REPO` | Moodle repository URL (override with your fork if needed). | `https://github.com/moodle/moodle.git` |
 | `DOCUMENT_ROOT` | Directory Apache serves. | `/var/www/moodle/public` |
-| `APACHE_CONF` | Virtual host file copied into Apache. | `apache-5.x.conf` |
+| `APACHE_CONF` | Virtual host file copied into Apache (ignored by PHP-FPM builds). | `apache-5.x.conf` |
 
 ### Runtime environment (Redis)
 
@@ -130,4 +156,4 @@ volumes:
 
 ### CI / publishing
 
-The workflow in `.github/workflows/build.yml` logs into Docker Hub on every push to `main`, builds the matrix, and publishes the `*-lts` tags plus `latest`. Track releases via GitHub Actions or the Docker Hub tags page.
+The workflow in `.github/workflows/build.yml` logs into Docker Hub on every push to `main`, builds the matrix, and publishes the `*-lts` tags plus `latest`/`latest-fpm`. Track releases via GitHub Actions or the Docker Hub tags page.
