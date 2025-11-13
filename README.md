@@ -23,6 +23,7 @@ See the [Docker Hub tags page](https://hub.docker.com/r/pasechnik/moodle_lts_ima
 - PECL extensions `igbinary`, `msgpack`, `redis` compiled with igbinary/msgpack/lzf support.
 - Cron job every minute via `/etc/cron.d/moodle-cron`.
 - Entry script writes Redis session configuration to `/usr/local/etc/php/conf.d/redis-session.ini`.
+- Custom overrides in `config/php/php.ini` copied to `/usr/local/etc/php/conf.d/zzz-moodle.ini` (ships with `max_input_vars = 5000`, higher resource/time limits, error/log suppression, and tuned opcache).
 - Elasticsearch support should be installed at the application level via the official Composer client (PECL module is discontinued).
 
 ### How to use these images
@@ -48,6 +49,17 @@ docker build \
 
 docker push your-namespace/moodle:5.1.0-lts
 ```
+
+### PHP configuration overrides
+
+The build copies `config/php/php.ini` into `/usr/local/etc/php/conf.d/zzz-moodle.ini`, so its directives win over defaults in the base `php.ini`. Out of the box it:
+
+- raises `max_input_vars` to `5000`, satisfying the Moodle installer;
+- bumps typical upload/time/memory limits (`upload_max_filesize = 50M`, `post_max_size = 50M`, `memory_limit = 512M`, `max_execution_time = 300`);
+- disables runtime error display/logging (`display_errors = Off`, `log_errors = Off`); and
+- configures opcache for medium-sized deployments.
+
+Adjust this file to suit your environment, then rebuild/push the image—the `zzz-` prefix ensures the overrides load last.
 
 #### Sample docker-compose
 
