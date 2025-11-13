@@ -67,9 +67,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     gd intl zip soap xsl opcache \
     mysqli pdo_mysql pdo_pgsql pgsql
 
-# Redis & Elasticsearch drivers with performance extensions
+# Redis driver with performance extensions (PECL elasticsearch is unmaintained)
 RUN set -eux \
- && pecl install igbinary msgpack elasticsearch \
+ && pecl install igbinary msgpack \
  && cd /tmp \
  && pecl bundle redis \
  && cd redis \
@@ -79,7 +79,7 @@ RUN set -eux \
  && make install \
  && cd /tmp \
  && rm -rf redis \
- && docker-php-ext-enable igbinary msgpack redis elasticsearch
+ && docker-php-ext-enable igbinary msgpack redis
 
 # Moodle root
 WORKDIR ${MOODLE_APP_DIR}
