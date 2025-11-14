@@ -24,7 +24,7 @@ See the [Docker Hub tags page](https://hub.docker.com/r/pasechnik/moodle_lts_ima
 ### Image highlights
 
 - Apache 2.4 with `rewrite`, `headers`, `ssl`, `expires`, `deflate`, `FallbackResource /r.php`, `AcceptPathInfo On`, `Options -Indexes`, `EnableSendfile Off`, and `EnableMMAP Off` (only in the bundled Apache images; PHP-FPM variants expect an external HTTP server).
-- PHP 8.1/8.2 with `intl`, `soap`, `xsl`, `opcache`, `gd`, `zip`, `pdo_mysql`, `pdo_pgsql`, `pgsql`, `mysqli`, and more.
+- PHP 8.1/8.2 with `intl`, `soap`, `xsl`, `opcache`, `gd`, `exif`, `zip`, `pdo_mysql`, `pdo_pgsql`, `pgsql`, `mysqli`, and more.
 - PECL extensions `igbinary`, `msgpack`, `redis` compiled with igbinary/msgpack/lzf support.
 - Cron job every minute via `/etc/cron.d/moodle-cron`.
 - Entry script writes Redis session configuration to `/usr/local/etc/php/conf.d/redis-session.ini`.
