@@ -39,29 +39,41 @@ RUN a2enmod rewrite headers ssl deflate expires \
 # -------- Install system dependencies --------
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
+    aspell \
     ca-certificates \
-    curl \
-    git \
-    unzip \
     cron \
-    postgresql-client \
+    curl \
     default-mysql-client \
-    mariadb-client \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    libxml2-dev \
-    libzip-dev \
-    libpq-dev \
-    libicu-dev \
+    g++ \
+    git \
+    graphviz \
+    ghostscript \
     libcurl4-openssl-dev \
-    libxslt1-dev \
-    libonig-dev \
-    libmariadb-dev-compat \
-    libmariadb-dev \
-    liblzf-dev \
+    libfreetype6-dev \
+    libicu-dev \
+    libjpeg-dev \
+    libjpeg62-turbo-dev \
     liblz4-dev \
+    liblzf-dev \
+    libmariadb-dev \
+    libmariadb-dev-compat \
+    libonig-dev \
+    libpng-dev \
+    libpq-dev \
+    libssl-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    libzip-dev \
+    mariadb-client \
+    openssh-client \
+    patch \
     pkg-config \
+    poppler-utils \
+    postgresql-client \
+    tzdata \
+    unzip \
+    vim \
+    zlib1g-dev \
  && rm -rf /var/lib/apt/lists/*
 
 # -------- PHP extensions --------
